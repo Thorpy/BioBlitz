@@ -25,6 +25,7 @@ For the captive portal:
 
 clone into:
 git clone https://github.com/Splines/raspi-captive-portal.git
+
 cd ./raspi-captive-portal/
 
 Customise the files in there to what you want:
