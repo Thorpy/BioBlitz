@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bioblitz Battle!</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  color: #333;
+  background-color: #98ddca;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* Navigation Bar */
+nav {
+  background-color: #004c40;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  z-index: 1;
+}
+
+nav a {
+  color: #fff;
+  margin-right: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+nav a:hover {
+  color: #f9f9f9;
+}
+
+/* Header */
+header {
+  background-color: #fff;
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+}
+
+header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+header h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Team Select */
+#team-select {
+  align-items: center;
+  margin-top: 2rem;
+  background-color: #e6f2f0;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+#team-select h2 {
+  align-items: center;
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #004c40;
+}
+
+#team-name {
+  align-items: center;
+  text-align: center;
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  font-size: 1rem;
+  color: #333;
+}
+
+#team-name:focus {
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#create-team {
+  background-color: #004c40;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 1rem;
+  margin-top: 1rem;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#create-team:hover {
+  background-color: #00796b;
+}
+
+#team-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#team-list li {
+    visibility: hidden;
+}
+
+#team-list li:hover {
+    visibility: hidden;
+}
+
+/* Game */
+#game {
+  margin: auto;
+  text-align: center;
+  background-color: #F0F5FF;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+}
+
+#game h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #14213D;
+}
+
+#game p {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  color: #14213D;
+}
+
+#game input[type="text"] {
+  font-size: 1.5rem;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 10px;
+  width: 60%;
+  background-color: #FFF;
+  color: #14213D;
+}
+
+#game button {
+  font-size: 1.5rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #60B6E3;
+  color: #FFF;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#game button:hover {
+  background-color: #3A8FB7;
+}
+
+#team-name {
+  width: 60%;
+  font-size: 1.5rem;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 10px;
+  background-color: #FFF;
+  color: #14213D;
+}
+    </style>
+</head>
+
+<body>
+    <h1>Bioblitz Battle</h1>
+
+    <div id="team-select">
+        <h2>Create or join a team:</h2>
+        <input type="text" id="team-name" placeholder="Team name">
+        <button id="create-team">Create team</button>
+        <ul id="team-list" class="hidden""></ul>
+    </div>
+
+    <div id="game" style="display: none;">
+        <h2>Find a species for your team <span id="team-name-display"></span></h2>
+        <div style="position: relative;">
+            <input type="text" id="creature-name" placeholder="Creature name">
+            <ul id="autocomplete" style="position: absolute; top: -100%; left: 0; right: 0;"></ul>
+        </div>
+        <button id="submit-creature" style="display: none;">Submit</button>
+        <h3>Team scores:</h3>
+        <ul id="team-scores"></ul>
+    </div>
+
+    <script>
+        var ws = new WebSocket("ws://" + location.host + "/game");
+        var teamSelect = document.getElementById("team-select");
+        var teamName = document.getElementById("team-name");
+        var createTeam = document.getElementById("create-team");
+        var teamList = document.getElementById("team-list");
+
+        var game = document.getElementById("game");
+        var creatureName = document.getElementById("creature-name");
+        var submitCreature = document.getElementById("submit-creature");
+        var teamScore = document.getElementById("team-score");
+        var teamScores = document.getElementById("team-scores");
+
+        var selectedTeam = null;
+
+        // Autocomplete function for creature name input
+        var creatures = ["shark", "whale", "jellyfish", "octopus", "dolphin", "crab", "lobster", "sea turtle", "starfish"];
+        var autocompleteCreature = function(input, array) {
+            input.addEventListener("input", function() {
+                var val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                var list = document.createElement("ul");
+                list.setAttribute("id", this.id + "-autocomplete-list");
+                list.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(list);
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i].toLowerCase().indexOf(val.toLowerCase()) > -1) {
+                        var item = document.createElement("li");
+                        item.innerHTML = "<strong>" + array[i].substr(0, val.length) + "</strong>";
+                        item.innerHTML += array[i].substr(val.length);
+                        item.addEventListener("click", function() {
+                            input.value = this.innerText;
+                            closeAllLists();
+                        });
+                        list.appendChild(item);
+                    }
+                }
+            });
+
+            function closeAllLists(elmnt) {
+                var lists = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < lists.length; i++) {
+                    if (elmnt != lists[i] && elmnt != input) {
+                        lists[i].parentNode.removeChild(lists[i]);
+                    }
+                }
+            }
+
+            document.addEventListener("click", function(e) {
+                closeAllLists(e.target);
+            });
+        };
+
+        // Initialize autocomplete for creature name input
+        autocompleteCreature(creatureName, creatures);
+
+        createTeam.addEventListener("click", function() {
+            var name = teamName.value.trim();
+            if (name.length > 0) {
+                ws.send(JSON.stringify({
+                    action: "create_team",
+                    team_name: name
+                }));
+                ws.send(JSON.stringify({
+                    action: "submit_creature",
+                    team_name: name,
+                    creature_name: name
+                }));
+                selectedTeam = name;
+                document.getElementById("team-name-display").textContent = "(" + name + ")";
+                // Hide team-select div and show game div
+                teamSelect.style.display = "none";
+                game.style.display = "block";
+                submitCreature.style.display = "block";
+                creatureName.style.display = "block";
+            }
+        });
+
+        submitCreature.addEventListener("click", function() {
+            var name = creatureName.value.trim().replace(/[^\w\s]/gi, ''); // remove non-alphanumeric characters
+            name = encodeURIComponent(name); // encode special characters
+            name = name.substr(0, 20); // truncate to 20 characters
+            name = name.trim(); // remove any leading or trailing whitespace
+
+            if (name.length > 0) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        action: "submit_creature",
+                        team_name: selectedTeam,
+                        creature_name: name
+                    }));
+                    creatureName.value = "";
+                } else {
+                    console.log("WebSocket not open");
+                }
+            }
+        });
+
+        ws.onopen = function(event) {
+            console.log("WebSocket opened");
+        };
+
+        ws.onmessage = function(event) {
+            var data = JSON.parse(event.data);
+            var action = data.action;
+
+            if (action == "update_team_list") {
+                var list = data.team_list;
+                teamList.innerHTML = "";
+                for (var i = 0; i < list.length; i++) {
+                    var item = document.createElement("li");
+                    item.innerText = list[i];
+                    item.onclick = function() {
+                        selectedTeam = this.innerText;
+                        teamSelect.style.display = "none";
+                        game.style.display = "block";
+                        teamScore.innerText = "0";
+                        submitCreature.style.display = "block";
+                        creatureName.style.display = "block";
+                        submitCreature.style.display = "block";
+                    };
+                    teamList.appendChild(item);
+                }
+            }
+
+    if (action == "update_team_score") {
+    var teamName = teamName.value.trim().replace(/[^\w\s]/gi, ''); // remove non-alphanumeric characters
+    teamName = encodeURIComponent(teamName); // encode special characters
+    teamName = teamName.substr(0, 20); // truncate to 20 characters
+    teamName = teamName.trim(); // remove any leading or trailing whitespace
+    teamName = teamName.slice(0, 1).toUpperCase() + teamName.slice(1).toLowerCase(); // capitalize first letter, lowercase the rest
+
+    var score = data.score;
+    var teamScoreElement = document.getElementById("team-score-" + teamName);
+    if (teamScoreElement) {
+        teamScoreElement.innerText = score;
+    } else {
+        var item = document.createElement("li");
+        item.innerText = teamName + ": ";
+        var scoreElement = document.createElement("span");
+        scoreElement.id = "team-score-" + teamName;
+        scoreElement.innerText = score;
+        item.appendChild(scoreElement);
+        teamScores.appendChild(item);
+    }
+}
+
+if (action == "update_team_scores") {
+    var teams = data.teams;
+    for (var teamName in teams) {
+        var score = teams[teamName].score;
+        var teamScoreElement = document.getElementById("team-score-" + teamName);
+        if (teamScoreElement) {
+            teamScoreElement.innerText = score;
+        } else {
+            var item = document.createElement("li");
+            item.innerText = teamName + ": ";
+            var scoreElement = document.createElement("span");
+            scoreElement.id = "team-score-" + teamName;
+            scoreElement.innerText = score;
+            item.appendChild(scoreElement);
+            teamScores.appendChild(item);
+        }
+    }
+}
+
+    };
+    
+    window.onbeforeunload = function() {
+      ws.close();
+    };
+    
+    ws.onclose = function(event) {
+      if (ws.readyState == WebSocket.CLOSED) {
+            console.log("WebSocket closed");
+      }
+};
+
+    ws.onerror = function(event) {
+        console.log("WebSocket error", event);
+    };
+    </script>
+</body>
+
+</html>
