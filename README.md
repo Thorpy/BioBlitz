@@ -37,5 +37,3 @@ sudo python setup.py
 This will set up the captive portal and welcome page and add it to startup automatically.
 
 ------------------------------------------------
-
-This only has an example list of creatures to autocomplete and gain points from currently.
