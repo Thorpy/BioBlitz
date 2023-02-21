@@ -992,9 +992,9 @@ async def game(websocket: WebSocket):
 
 @app.get("/")
 async def get():
-    with open("index.html") as f:
+    with open("/home/pi/bioblitz-game/index.html") as f:
         return HTMLResponse(f.read())
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="192.168.4.1", port=8000)
