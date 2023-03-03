@@ -16,6 +16,7 @@ app = FastAPI()
 
 class Game:
     def __init__(self):
+        # Define initial scores for creatures
         self.creature_scores = {
             "a hydroid":3,
             "a keel worm":3,
@@ -856,17 +857,21 @@ class Game:
             "yellow-plumed sea slug":2,
             "yellow sea squirt":8,
         }
+        # Define initial teams dictionary
         self.teams = {}
 
     def get_creature_score(self, creature_name):
+        # Return the score for a given creature
         return self.creature_scores.get(creature_name.lower(), 0)
 
     def add_team(self, team_name):
+        # Add a new team to the game
         team_name_lower = team_name.lower()
         self.teams[team_name_lower] = {"score": 0, "creatures": []}
         return team_name_lower.capitalize()
 
     def submit_creature(self, team_name, creature_name):
+        # Add a creature to a team and update the team's score
         creature_name = unquote(creature_name.lower())
         print(creature_name + " submitted by: " + str(team_name))
         creature_score = self.get_creature_score(creature_name)
@@ -879,28 +884,26 @@ class Game:
             self.teams[team_name.lower()]["score"] += creature_score
             self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
 
+        # Prepare a message to send to clients with updated team scores
         data = {"action": "update_team_scores", "teams": self.teams}
         message = json.dumps(data)
         return message
 
-
-
     def get_team_scores(self):
+        # Prepare a message to send to clients with updated team scores
         capitalized_teams = {team_name.capitalize(): data for team_name, data in self.teams.items()}
         data = {"action": "update_team_scores", "teams": capitalized_teams}
         message = json.dumps(data)
         return message
 
 
-
-
 class GameWebSocket(WebSocket):
-    websockets = []
+    websockets = [] # list to store all WebSocket connections
 
     def __init__(self, websocket: WebSocket, receive: Callable, send: Callable):
         super().__init__(websocket, receive=receive, send=send)
-        self.teams = {}
-        self.game = Game()
+        self.teams = {} # dictionary to store teams and their creatures
+        self.game = Game() # initialize the game
         self.application_state = WebSocketState.CONNECTED
 
         # Open the connection immediately
@@ -949,7 +952,6 @@ class GameWebSocket(WebSocket):
         except:
             print("Someone left and tried to break things")
 
-
     async def broadcast_team_scores(self):
         # Send the team scores to all clients.
         message = self.game.get_team_scores()
@@ -962,8 +964,6 @@ class GameWebSocket(WebSocket):
                     self.websockets.remove(websocket)
         await asyncio.gather(*tasks)
 
-
-
     async def on_disconnect(self, close_code: int):
         if self in self.websockets:
             self.websockets.remove(self)
@@ -971,7 +971,7 @@ class GameWebSocket(WebSocket):
 
 @app.websocket("/game")
 async def game(websocket: WebSocket):
-    await websocket.accept()
+    await websocket.accept() # accept the WebSocket connection
     game_websocket = GameWebSocket(
         websocket, receive=websocket.receive, send=websocket.send
     )
@@ -979,17 +979,17 @@ async def game(websocket: WebSocket):
 
     try:
         while True:
-            data = await websocket.receive_text()
-            await game_websocket.on_receive(data)
+            data = await websocket.receive_text() # wait for data to receive from the WebSocket client
+            await game_websocket.on_receive(data) # handle the data received
     except WebSocketDisconnect:
-        await game_websocket.on_disconnect(1000)
+        await game_websocket.on_disconnect(1000) # handle the WebSocket disconnection
 
 
 @app.get("/")
 async def get():
     with open("/home/pi/bioblitz-game/index.html") as f:
-        return HTMLResponse(f.read())
+        return HTMLResponse(f.read())   # send the contents of the index.html file
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="192.168.4.1", port=8000)
+    uvicorn.run(app, host="192.168.4.1", port=8000) # run the app on 192.168.4.1:8000 using uvicorn server (opens with splines captive portal)
