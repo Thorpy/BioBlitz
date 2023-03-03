@@ -968,11 +968,6 @@ class GameWebSocket(WebSocket):
         if self in self.websockets:
             self.websockets.remove(self)
 
-    async def on_disconnect(self, close_code: int):
-        if self in self.websockets:
-            self.websockets.remove(self)
-
-
 
 @app.websocket("/game")
 async def game(websocket: WebSocket):
