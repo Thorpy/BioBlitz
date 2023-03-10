@@ -885,7 +885,8 @@ class Game:
             self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
 
         # Prepare a message to send to clients with updated team scores
-        data = {"action": "update_team_scores", "teams": self.teams}
+        creatures = self.teams[team_name.lower()]["creatures"]
+        data = {"action": "update_team_scores", "teams": self.teams, "creatures": creatures}
         message = json.dumps(data)
         return message
 
