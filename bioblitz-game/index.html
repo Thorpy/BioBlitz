@@ -252,6 +252,8 @@ color: #14213D;
                 var list = document.createElement("ul");
                 list.setAttribute("id", this.id + "-autocomplete-list");
                 list.setAttribute("class", "autocomplete-items");
+                // Add a CSS style rule for the autocomplete-items class to increase the font size of the autocompleted creatured from the search bar
+                list.style.fontSize = "1.4em";
                 this.parentNode.appendChild(list);
                 for (var i = 0; i < array.length; i++) {
                     if (array[i].toLowerCase().indexOf(val.toLowerCase()) > -1) {
