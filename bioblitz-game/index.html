@@ -225,6 +225,7 @@ color: #14213D;
         <button id="submit-creature" style="display: none;">Submit</button>
         <h3>Team scores:</h3>
         <ul id="team-scores"></ul>
+        <ul id="team-creatures-list">
     </div>
 
     <script>
@@ -375,26 +376,56 @@ color: #14213D;
     }
 }
 
-if (action == "update_team_scores") {
-    var teams = data.teams;
-    for (var teamName in teams) {
-        var score = teams[teamName].score;
-        var teamScoreElement = document.getElementById("team-score-" + teamName);
-        if (teamScoreElement) {
-            teamScoreElement.innerText = score;
-        } else {
-            var item = document.createElement("li");
-            item.innerText = teamName + ": ";
-            var scoreElement = document.createElement("span");
-            scoreElement.id = "team-score-" + teamName;
-            scoreElement.innerText = score;
-            item.appendChild(scoreElement);
-            teamScores.appendChild(item);
-        }
-    }
-}
-
-    };
+     var teamCreaturesList = document.getElementById("team-creatures-list");
+     if (action == "update_team_scores") {
+         var teams = data.teams;
+         for (var teamName in teams) {
+             var score = teams[teamName].score;
+             var teamScoreElement = document.getElementById("team-score-" + teamName);
+             if (teamScoreElement) {
+                 teamScoreElement.innerText = score;
+             } else {
+                 var item = document.createElement("li");
+                 item.innerText = teamName + ": ";
+                 var scoreElement = document.createElement("span");
+                 scoreElement.id = "team-score-" + teamName;
+                 scoreElement.innerText = score;
+                 item.appendChild(scoreElement);
+                 teamScores.appendChild(item);
+             }
+             
+             // update the list of creatures for the team
+             var teamCreatures = teams[teamName].creatures;
+             var creaturesElement = document.getElementById("team-creatures-" + teamName);
+             if (creaturesElement) {
+                 creaturesElement.innerHTML = ""; // clear the existing list
+                 for (var i = 0; i < teamCreatures.length; i++) {
+                     var creatureName = teamCreatures[i];
+                     if (creatures.includes(creatureName)) { // check if the creature is in var creatures
+                         var creatureElement = document.createElement("li");
+                         creatureElement.innerText = creatureName;
+                         creaturesElement.appendChild(creatureElement);
+                     }
+                 }
+             } else {
+                 var item = document.createElement("li");
+                 item.innerText = teamName + " creatures:";
+                 var creaturesElement = document.createElement("ul");
+                 creaturesElement.id = "team-creatures-" + teamName;
+                 for (var i = 0; i < teamCreatures.length; i++) {
+                     var creatureName = teamCreatures[i];
+                     if (creatures.includes(creatureName)) { // check if the creature is in var creatures
+                         var creatureElement = document.createElement("li");
+                         creatureElement.innerText = creatureName;
+                         creaturesElement.appendChild(creatureElement);
+                     }
+                 }
+                 item.appendChild(creaturesElement);
+                 teamCreaturesList.appendChild(item);
+             }
+         }
+     }
+        };
     
     window.onbeforeunload = function() {
       ws.close();
