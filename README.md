@@ -75,5 +75,5 @@ You can also edit the landing page index.html here: BioBlitz/raspi-captive-porta
 and the bioblitz game index, js and css etc here: BioBlitz/bioblitz-game/static/ (https://github.com/Thorpy/BioBlitz/tree/master/bioblitz-game/static)
 
 
-A big thank you to Spines - https://github.com/Splines
-Spines made and maintains the captive portal used in this project (https://github.com/Splines/raspi-captive-portal)
+A big thank you to Splines - https://github.com/Splines
+Splines made and maintains the captive portal used in this project (https://github.com/Splines/raspi-captive-portal)
