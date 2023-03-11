@@ -10,6 +10,23 @@ This welcome page then redirects the user (open pressing the start button) to th
 
 ------------------------------------------------
 
+What you'll need:
+A raspberry pi with wifi (or a dongle)
+An ethernet cable will save a lot of headaches (unless you have two wifi chips, one onboard and one via dongle as you need to be able to connect to the pi and broadcast a wifi spot)
+sd card
+putty or your favourite ssh client - https://putty.org
+Angry ip scanner (if you need help finding the pi's ip) - https://angryip.org/download/
+
+
+If you know what you're doing:
+wget the install script: https://raw.githubusercontent.com/Thorpy/BioBlitz/master/install.sh
+chmod it
+run it with permissions and wait
+
+
+
+More indepth instructions below:
+
 Install the OS onto the raspberry pi and enable ssh/wireless config etc
 
 1. Plug your sd card into a reader and into your pc.
@@ -17,6 +34,7 @@ Install the OS onto the raspberry pi and enable ssh/wireless config etc
 3. Open up Raspberry pi imager and select operating system -> raspberry pi os (other) -> raspberry pi os lite (32 bit)
 4. under "Storage" make sure the correct storage medium (the sd card) is selected.
 5. --IMPORTANT-- click the settings cog (under "write"), enable SSH and set a username and password of your choice, if you do not have an ethernet connection, you may want to configure wireless lan to be able to access the raspberry pi, you can do this in the settings also, now press save.
+PLEASE BE AWARE THAT USING AN ETHERNET IS A MUCH PREFERRED OPTION, IT WILL BE ANNOYING TO HAVE TO CONNECT VIA WIFI TO THE PI....WHILE IT TRIES TO SET UP A WIFI HOTSPOT USING THE SAME WIFI CHIP, it is possible to use an onboard chip and a dongle but this may require further setup.
 6. You can now press "write" and go get yourself a nice coffee while it does it's thing. (if it pops up any window saying to open (H:) or any other drive just click cancel, it's just mounting the SD card ready for writing.
 
 
@@ -40,8 +58,10 @@ Setting up the Game.
 
 YOU'RE DONE!
 
+The wifi hotspot "bioblitz game" should be broadcasting with the password "rockpool", the game is on 192.168.4.1:8000 if the captive portal isn't working on your device for some reason. This should happen when you 
 
 
+---------------------------------------------------------------------------
 
 Customisation:
 
