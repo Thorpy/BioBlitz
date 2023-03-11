@@ -13,6 +13,7 @@ cd /home/pi/BioBlitz/bioblitz-game
 pip3 install -r requirements.txt
 
 # Run setup.py script
+cd /home/pi/BioBlitz//raspi-captive-portal
 python /home/pi/BioBlitz/raspi-captive-portal/setup.py
 
 # Add startup command to rc.local
