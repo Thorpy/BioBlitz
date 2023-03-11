@@ -14,7 +14,7 @@ pip3 install -r requirements.txt
 
 # Run setup.py script
 cd /home/pi/BioBlitz//raspi-captive-portal
-python /home/pi/BioBlitz/raspi-captive-portal/setup.py
+sudo python /home/pi/BioBlitz/raspi-captive-portal/setup.py
 
 # Add startup command to rc.local
 sed -i -e '$i su -c "screen -dmS main /usr/bin/python3 /home/pi/BioBlitz/bioblitz-game/main.py" pi\n' /etc/rc.local
