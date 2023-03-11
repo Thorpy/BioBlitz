@@ -58,7 +58,7 @@ Setting up the Game.
 
 YOU'RE DONE!
 
-The wifi hotspot "bioblitz game" should be broadcasting with the password "rockpool", the game is on 192.168.4.1:8000 if the captive portal isn't working on your device for some reason. This should happen when you 
+The wifi hotspot "bioblitz game" should be broadcasting with the password "rockpool", the game is on 192.168.4.1:8000 if the captive portal isn't working on your device for some reason. This should happen when you join the hotspot with the password.
 
 
 ---------------------------------------------------------------------------
