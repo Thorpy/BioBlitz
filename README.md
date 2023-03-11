@@ -31,7 +31,7 @@ To play BioBlitz, you will need:
 
    - Once the SD card has finished being written to and the install is verified, take it out of your PC and reader and plug it into your Raspberry Pi.
    - If using an Ethernet, plug the Ethernet into the Pi and then plug in the power.
-   - Try to find the IP of your Pi, either from the Ethernet or the Wi-Fi you supplied it with. You can do this by checking the connections to your router, or by using "Angry IP Scanner" to scan your network for it: [https://angryip.org/download/](https://angryip.org/download/) (shows up as ipscan-win64-3.9.1.exe) if using the standalone exe.
+   - Try to find the IP of your Pi, either from the Ethernet or the Wi-Fi you supplied it with. You can do this by checking the connections to your router, or by using "Angry IP Scanner" to scan your network for it: [https://angryip.org/download/](https://angryip.org/download/) (The file shows up as ipscan-win64-3.9.1.exe if using the standalone exe.) The raspberry pi should show up as "raspberry.local" or similar (depending on if you customised the hostname or not)
    - Open up Putty and in the "host name or IP address" box type in your Pi's IP (the port will be 22 and should be there already), make sure connection type is "SSH," and at the bottom, click "open." This may pop up some text asking you to verify the fingerprint. If this happens, just press "yes" or "OK," and then you will be prompted to login as the user you created in the settings section above.
    - You should now be logged into the Pi!
 
