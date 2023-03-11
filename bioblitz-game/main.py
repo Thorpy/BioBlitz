@@ -1,3 +1,4 @@
+import os
 import asyncio
 import json
 import uvicorn
@@ -10,7 +11,8 @@ from urllib.parse import unquote
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="/home/pi/BioBlitz/bioblitz-game/static"), name="static")
+home_dir = os.environ['HOME']
+app.mount("/static", StaticFiles(directory=f"{home_dir}/BioBlitz/bioblitz-game/static"), name="static")
 
 class Game:
     def __init__(self):
@@ -986,7 +988,8 @@ async def game(websocket: WebSocket):
 
 @app.get("/")
 async def read_index():
-    return FileResponse("/home/pi/BioBlitz/bioblitz-game/static/index.html")
+    file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/index.html"
+    return FileResponse(file_path)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.4.1", port=8000) # run the app on 192.168.4.1:8000 using uvicorn server (opens with splines captive portal)
