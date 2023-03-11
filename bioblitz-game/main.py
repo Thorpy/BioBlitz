@@ -5,7 +5,6 @@ from typing import Callable
 from fastapi import FastAPI
 from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-from websockets.exceptions import ConnectionClosed
 from urllib.parse import unquote
 
 
