@@ -4,11 +4,13 @@ import uvicorn
 from typing import Callable
 from fastapi import FastAPI
 from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from urllib.parse import unquote
 
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="/home/pi/bioblitz-game/static"), name="static")
 
 class Game:
     def __init__(self):
@@ -983,10 +985,8 @@ async def game(websocket: WebSocket):
 
 
 @app.get("/")
-async def get():
-    with open("/home/pi/bioblitz-game/index.html") as f:
-        return HTMLResponse(f.read())   # send the contents of the index.html file
-
+async def read_index():
+    return FileResponse("/home/pi/bioblitz-game/static/index.html")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.4.1", port=8000) # run the app on 192.168.4.1:8000 using uvicorn server (opens with splines captive portal)

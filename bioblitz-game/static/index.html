@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bioblitz Battle!</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+</head>
+
+<body>
+    <h1>Bioblitz Battle</h1>
+
+    <div id="team-select">
+        <h2>Create or join a team:</h2>
+        <input type="text" id="team-name" placeholder="Team name">
+        <button id="create-team">Create team</button>
+        <ul id="team-list" class="hidden"></ul>
+    </div>
+
+    <div id="game" style="display: none;">
+        <h2>Find a species for your team <span id="team-name-display"></span></h2>
+        <div style="position: relative;">
+            <input type="text" id="creature-name" placeholder="Creature name">
+            <ul id="autocomplete" style="position: absolute; top: -100%; left: 0; right: 0;"></ul>
+        </div>
+        <button id="submit-creature" style="display: none;">Submit</button>
+        <h3>Team scores:</h3>
+        <ul id="team-scores"></ul>
+        <ul id="team-creatures-list">
+    </div>
+        <script src="/static/js/script.js"></script>     
+</body>
+
+</html>
