@@ -8,20 +8,19 @@ The aim of the game is to join teams and do real life "bioblitz" battles, findin
 The game runs on a raspberry pi, the captive portal (https://github.com/Splines/raspi-captive-portal) spawns a wifi hotspot which redirects users to a "welcome page"
 This welcome page then redirects the user (open pressing the start button) to the FastAPI server which hosts the bioblitz game.
 
+If you know what you're doing:
+- wget the install script: https://raw.githubusercontent.com/Thorpy/BioBlitz/master/install.sh
+- chmod it
+- run it with permissions and wait
+
 ------------------------------------------------
 
 What you'll need:
-A raspberry pi with wifi (or a dongle)
-An ethernet cable will save a lot of headaches (unless you have two wifi chips, one onboard and one via dongle as you need to be able to connect to the pi and broadcast a wifi spot)
-sd card
-putty or your favourite ssh client - https://putty.org
-Angry ip scanner (if you need help finding the pi's ip) - https://angryip.org/download/
-
-
-If you know what you're doing:
-wget the install script: https://raw.githubusercontent.com/Thorpy/BioBlitz/master/install.sh
-chmod it
-run it with permissions and wait
+- A raspberry pi with wifi (or a dongle)
+- An ethernet cable will save a lot of headaches (unless you have two wifi chips, one onboard and one via dongle as you need to be able to connect to the pi and broadcast a wifi spot)
+- sd card
+- putty or your favourite ssh client - https://putty.org
+- Angry ip scanner (if you need help finding the pi's ip) - https://angryip.org/download/
 
 
 
