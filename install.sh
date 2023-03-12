@@ -28,7 +28,7 @@ Description=BioBlitz Game
 After=network-online.target
 
 [Service]
-User=$user
+User="$user"
 WorkingDirectory=$home_dir/BioBlitz/bioblitz-game
 ExecStart=/usr/bin/screen -dmS bioblitz bash -c "python3 main.py"
 Restart=always
