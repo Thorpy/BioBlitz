@@ -6,6 +6,7 @@ apt-get install -y git python3-pip screen
 
 # Get the home directory of the current user
 home_dir=$HOME
+user=$USER
 
 # Clone the BioBlitz repository to the user's home directory
 cd $home_dir
@@ -20,7 +21,7 @@ cd $home_dir/BioBlitz/raspi-captive-portal
 yes Y | sudo python $home_dir/BioBlitz/raspi-captive-portal/setup.py
 
 # Add startup command to rc.local
-sed -i -e '$i su -c "screen -dmS main /usr/bin/python3 $home_dir/BioBlitz/bioblitz-game/main.py" $USER\n' /etc/rc.local
+sed -i -e '$i su -c "screen -dmS main /usr/bin/python3 $home_dir/BioBlitz/bioblitz-game/main.py" $user\n' /etc/rc.local
 
 # Start the main.py script in a new screen session
 screen -dmS main /usr/bin/python3 $home_dir/BioBlitz/bioblitz-game/main.py
