@@ -21,7 +21,7 @@ cd $home_dir/BioBlitz/raspi-captive-portal
 yes Y | sudo python $home_dir/BioBlitz/raspi-captive-portal/setup.py
 
 # Add startup command to rc.local
-sed -i -e '/^exit 0/i # Define home_dir and user\nhome_dir=$(echo $HOME)\nuser=$(whoami)\n\nsu -c "screen -dmS main /usr/bin/python3 $home_dir/BioBlitz/bioblitz-game/main.py" $user\n' /etc/rc.local
+sed -i -e '/^exit 0/i # Export home_dir and user\nexport home_dir=/home/$SUDO_USER\nexport user=$SUDO_USER\n\n# Run main.py in screen session\nsu -c "screen -dmS main /usr/bin/python3 $home_dir/BioBlitz/bioblitz-game/main.py" $user\n' /etc/rc.local
 
 # Start the main.py script in a new screen session
 screen -dmS main /usr/bin/python3 $home_dir/BioBlitz/bioblitz-game/main.py
