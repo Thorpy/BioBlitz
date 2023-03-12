@@ -22,7 +22,7 @@ yes Y | sudo python $home_dir/BioBlitz/raspi-captive-portal/setup.py
 
 # Add a command to run main.py in a screen session at startup
 sudo sed -i '/exit 0/d' /etc/rc.local
-sudo sh -c "echo 'screen -dmS bioblitz python3 $home_dir/BioBlitz/bioblitz-game/main.py' >> /etc/rc.local"
+sudo sh -c "echo 'su $SUDO_USER -c \"screen -dmS bioblitz python3 $home_dir/BioBlitz/bioblitz-game/main.py\"' >> /etc/rc.local"
 sudo sh -c "echo 'exit 0' >> /etc/rc.local"
 
 echo "Installation complete. The system will now reboot."
