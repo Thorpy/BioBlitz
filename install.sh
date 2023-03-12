@@ -21,8 +21,25 @@ cd $home_dir/BioBlitz/raspi-captive-portal
 yes Y | sudo python $home_dir/BioBlitz/raspi-captive-portal/setup.py
 
 # Add startup command to rc.local to start main.py in a screen session as the current user
-sed -i -e '/^exit 0/i # Export home_dir and user\nexport home_dir=\/home\/$SUDO_USER\nexport user='"$(whoami)"'\n\n# Run main.py in screen session\nsu -c "screen -dmS main \/usr\/bin\/python3 $home_dir\/BioBlitz\/bioblitz-game\/main.py" $user\n' /etc/rc.local && sudo chown root:root /etc/rc.local && sudo chmod +x /etc/rc.local
+# Create systemd service file
+cat << EOF | sudo tee /etc/systemd/system/bioblitz.service > /dev/null
+[Unit]
+Description=BioBlitz Game
+After=network-online.target
 
+[Service]
+User=$user
+WorkingDirectory=$home_dir/BioBlitz/bioblitz-game
+ExecStart=/usr/bin/screen -dmS bioblitz bash -c "python3 main.py"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable and start the systemd service
+sudo systemctl enable bioblitz.service
+sudo systemctl start bioblitz.service
 
 echo "Installation complete. The system will now reboot."
 reboot
