@@ -5,8 +5,8 @@ apt-get update
 apt-get install -y git python3-pip screen
 
 # Get the home directory of the current user
-home_dir=$HOME
-user=$USER
+home_dir=/home/$SUDO_USER
+user=$SUDO_USER
 
 # Clone the BioBlitz repository to the user's home directory
 cd $home_dir
