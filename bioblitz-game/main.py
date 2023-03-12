@@ -12,6 +12,7 @@ from urllib.parse import unquote
 
 app = FastAPI()
 home_dir = os.environ['HOME']
+data_file = f"{home_dir}/BioBlitz/bioblitz-game/data.json"
 app.mount("/static", StaticFiles(directory=f"{home_dir}/BioBlitz/bioblitz-game/static"), name="static")
 
 class Game:
@@ -859,16 +860,52 @@ class Game:
         }
         # Define initial teams dictionary
         self.teams = {}
+        self.load_data()
+
+    def load_data(self):
+        if os.path.exists(data_file):
+            with open(data_file, "r") as f:
+                self.teams = json.load(f)
+
+    def save_data(self):
+        with open(data_file, "w") as f:
+            json.dump(self.teams, f)
 
     def get_creature_score(self, creature_name):
         # Return the score for a given creature
         return self.creature_scores.get(creature_name.lower(), 0)
 
+    def is_json_string(self, input_string):
+        try:
+            json.loads(input_string)
+            return True
+        except ValueError:
+            return False
+
     def add_team(self, team_name):
+        # Check if the team name is JSON-friendly
+        try:
+            json.dumps({"team_name": team_name})
+        except:
+            raise ValueError("Team name is not JSON-friendly")
+
         # Add a new team to the game
         team_name_lower = team_name.lower()
-        self.teams[team_name_lower] = {"score": 0, "creatures": []}
-        return team_name_lower.capitalize()
+        if team_name_lower not in self.teams:
+            # if the team doesn't already exist
+            self.teams[team_name_lower] = {"score": 0, "creatures": []}
+            for creature in self.creature_scores.keys():
+                # Add each creature to the team's creatures list with a count of 0
+                self.teams[team_name_lower]["creatures"].append({"name": creature, "count": 0})
+            self.save_data()
+
+        # Prepare a message to send to clients with updated team scores and creatures found
+        creatures = self.teams[team_name_lower]["creatures"]
+        data = {"action": "update_team_scores", "teams": self.teams, "creatures": creatures}
+        message = json.dumps(data)
+        return message
+
+
 
     def submit_creature(self, team_name, creature_name):
         # Add a creature to a team and update the team's score
@@ -879,10 +916,12 @@ class Game:
             if creature_name.lower() not in self.teams[team_name.lower()]["creatures"]:
                 self.teams[team_name.lower()]["score"] += creature_score
                 self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
+                self.save_data()
         else:
             self.add_team(team_name.lower())
             self.teams[team_name.lower()]["score"] += creature_score
             self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
+            self.save_data()
 
         # Prepare a message to send to clients with updated team scores
         creatures = self.teams[team_name.lower()]["creatures"]
@@ -896,7 +935,6 @@ class Game:
         data = {"action": "update_team_scores", "teams": capitalized_teams}
         message = json.dumps(data)
         return message
-
 
 class GameWebSocket(WebSocket):
     websockets = [] # list to store all WebSocket connections
