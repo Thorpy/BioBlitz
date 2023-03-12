@@ -910,7 +910,6 @@ class Game:
     def submit_creature(self, team_name, creature_name):
         # Add a creature to a team and update the team's score
         creature_name = unquote(creature_name.lower())
-        print(creature_name + " submitted by: " + str(team_name))
         creature_score = self.get_creature_score(creature_name)
         if team_name.lower() in self.teams:
             if creature_name.lower() not in self.teams[team_name.lower()]["creatures"]:
@@ -989,7 +988,7 @@ class GameWebSocket(WebSocket):
         try:
             await asyncio.gather(*tasks)
         except:
-            print("Someone left and tried to break things")
+            pass
 
     async def broadcast_team_scores(self):
         # Send the team scores to all clients.
