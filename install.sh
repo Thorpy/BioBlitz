@@ -12,6 +12,9 @@ user=$SUDO_USER
 cd $home_dir
 git clone https://github.com/Thorpy/BioBlitz
 
+# Change the owner of the BioBlitz directory to the user
+chown -R $user:$user $home_dir/BioBlitz
+
 # Install requirements for main.py
 cd $home_dir/BioBlitz/bioblitz-game
 pip3 install -r requirements.txt
