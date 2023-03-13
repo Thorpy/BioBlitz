@@ -2,6 +2,7 @@ import os
 import asyncio
 import json
 import uvicorn
+import fcntl
 from typing import Callable
 from fastapi import FastAPI
 from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
@@ -865,11 +866,15 @@ class Game:
     def load_data(self):
         if os.path.exists(data_file):
             with open(data_file, "r") as f:
+                fcntl.flock(f, fcntl.LOCK_SH)
                 self.teams = json.load(f)
+                fcntl.flock(f, fcntl.LOCK_UN)
 
     def save_data(self):
         with open(data_file, "w") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
             json.dump(self.teams, f)
+            fcntl.flock(f, fcntl.LOCK_UN)
 
     def get_creature_score(self, creature_name):
         # Return the score for a given creature
