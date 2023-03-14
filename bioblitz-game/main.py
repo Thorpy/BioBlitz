@@ -871,9 +871,23 @@ class Game:
                 fcntl.flock(f, fcntl.LOCK_UN)
 
     def save_data(self):
+        # Save original data to original file
         with open(data_file, "w") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             json.dump(self.teams, f)
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+        # Save data without "creatures" key to new file (cleaner to read afterwards)
+        data_without_creatures = {}
+        for team_name, team_data in self.teams.items():
+            data_without_creatures[team_name] = {}
+            for key, value in team_data.items():
+                if key != "creatures":
+                    data_without_creatures[team_name][key] = value
+
+        with open("GameData.json", "w") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            json.dump(data_without_creatures, f, indent=4)
             fcntl.flock(f, fcntl.LOCK_UN)
 
     def get_creature_score(self, creature_name):
