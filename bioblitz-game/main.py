@@ -13,7 +13,7 @@ from urllib.parse import unquote
 
 app = FastAPI()
 home_dir = os.environ['HOME']
-data_file = f"{home_dir}/BioBlitz/bioblitz-game/data.json"
+data_path = f"{home_dir}/BioBlitz/bioblitz-game/"
 app.mount("/static", StaticFiles(directory=f"{home_dir}/BioBlitz/bioblitz-game/static"), name="static")
 
 class Game:
@@ -864,15 +864,15 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        if os.path.exists(data_file):
-            with open(data_file, "r") as f:
+        if os.path.exists(data_path + "data.json"):
+            with open(data_path + "data.json", "r") as f:
                 fcntl.flock(f, fcntl.LOCK_SH)
                 self.teams = json.load(f)
                 fcntl.flock(f, fcntl.LOCK_UN)
 
     def save_data(self):
         # Save original data to original file
-        with open(data_file, "w") as f:
+        with open(data_path + "data.json", "w") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             json.dump(self.teams, f)
             fcntl.flock(f, fcntl.LOCK_UN)
@@ -885,10 +885,12 @@ class Game:
                 if key != "creatures":
                     data_without_creatures[team_name][key] = value
 
-        with open("GameData.json", "w") as f:
+        with open(data_path + "GameData.json", "w") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             json.dump(data_without_creatures, f, indent=4)
             fcntl.flock(f, fcntl.LOCK_UN)
+
+
 
     def get_creature_score(self, creature_name):
         # Return the score for a given creature
