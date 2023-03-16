@@ -864,7 +864,7 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        data_file_path = os.path.join("static", "data.json")
+        data_file_path = os.path.join(data_path, "static", "data.json")
         if os.path.exists(data_file_path):
             with open(data_file_path, "r") as f:
                 fcntl.flock(f, fcntl.LOCK_SH)
@@ -872,7 +872,7 @@ class Game:
                 fcntl.flock(f, fcntl.LOCK_UN)
 
     def save_data(self):
-        data_file_path = os.path.join("static", "data.json")
+        data_file_path = os.path.join(data_path, "static", "data.json")
         with open(data_file_path, "w") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             json.dump(self.teams, f)
@@ -1040,7 +1040,8 @@ async def read_admin():
     
 @app.put("/data.json")
 async def update_data(data: dict):
-    with open(f"{home_dir}/BioBlitz/bioblitz-game/static/data.json", "w") as f:
+    data_file_path = os.path.join(data_path, "static", "data.json")
+    with open(data_file_path, "w") as f:
         json.dump(data, f, indent=2)
     return {"message": "Data updated successfully"}
 
