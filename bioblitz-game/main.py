@@ -1042,7 +1042,9 @@ async def read_admin():
 async def update_data(data: dict):
     data_file_path = os.path.join(data_path, "static", "data.json")
     with open(data_file_path, "w") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
         json.dump(data, f, indent=2)
+        fcntl.flock(f, fcntl.LOCK_UN)
     return {"message": "Data updated successfully"}
 
 if __name__ == "__main__":
