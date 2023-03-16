@@ -21,6 +21,8 @@
 	<button onclick="saveData()">Save Changes</button>
 
 	<script>
+		// connect to the websocket in order to refresh the client's data
+		var ws = new WebSocket("ws://" + location.host + "/game");
 		// Function to load the data from the JSON file
 		function loadData() {
 			fetch('/static/data.json')
@@ -79,6 +81,7 @@
 			body: dataJSON
 		})
 		.then(response => response.json())
+		.then(() => location.reload())
 		.catch(error => console.error(error));
 		}
 
