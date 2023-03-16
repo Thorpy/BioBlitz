@@ -22,7 +22,6 @@
 
 	<script>
 		// Function to load the data from the JSON file
-		var ws = new WebSocket("ws://" + location.host + "/game");
 		function loadData() {
 			fetch('/static/data.json')
 				.then(response => response.json())
