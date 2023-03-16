@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Admin Page</title>
+</head>
+<body>
+	<h1>Team Scores</h1>
+	<table id="team-scores">
+		<thead>
+			<tr>
+				<th>Team Name</th>
+				<th>Score</th>
+				<th>Creatures Found</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+
+	<!-- Button to save the changes to the JSON file -->
+	<button onclick="saveData()">Save Changes</button>
+
+	<script>
+		// Function to load the data from the JSON file
+		var ws = new WebSocket("ws://" + location.host + "/game");
+		function loadData() {
+			fetch('/static/data.json')
+				.then(response => response.json())
+				.then(data => {
+					// Loop through the data and add each team to the table
+					for (const [team, {score, creatures}] of Object.entries(data)) {
+						const row = document.createElement('tr');
+
+						const teamName = document.createElement('td');
+						teamName.innerText = team;
+						row.appendChild(teamName);
+
+						const teamScore = document.createElement('td');
+						const scoreInput = document.createElement('input');
+						scoreInput.type = 'text';
+						scoreInput.value = score;
+						teamScore.appendChild(scoreInput);
+						row.appendChild(teamScore);
+
+						const teamCreatures = document.createElement('td');
+						const creaturesInput = document.createElement('input');
+						creaturesInput.type = 'text';
+						creaturesInput.value = creatures.join(', ');
+						teamCreatures.appendChild(creaturesInput);
+						row.appendChild(teamCreatures);
+
+						document.getElementById('team-scores').querySelector('tbody').appendChild(row);
+					}
+				})
+				.catch(error => console.error(error));
+		}
+
+		// Function to save the changes to the JSON file
+		function saveData() {
+			// Loop through the table rows and update the data object
+			const data = {};
+			const tableRows = document.getElementById('team-scores').querySelectorAll('tbody tr');
+			for (const row of tableRows) {
+				const teamName = row.querySelector('td:first-child').innerText;
+				const scoreInput = row.querySelector('td:nth-child(2) input');
+				const creaturesInput = row.querySelector('td:nth-child(3) input');
+				data[teamName] = {
+					score: scoreInput.value,
+					creatures: creaturesInput.value.split(',').map(creature => creature.trim())
+				};
+			}
+
+			// Save the data object to the JSON file
+			const dataJSON = JSON.stringify(data, null, 2);
+			fetch('/data.json', {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: dataJSON
+		})
+		.then(response => response.json())
+		.then(data => console.log(data))
+		.catch(error => console.error(error));
+		}
+
+		// Load the data when the page loads
+		loadData();
+	</script>
+</body>
+</html>
