@@ -877,20 +877,6 @@ class Game:
             json.dump(self.teams, f)
             fcntl.flock(f, fcntl.LOCK_UN)
 
-        # Save data without "creatures" key to new file (cleaner to read afterwards)
-        data_without_creatures = {}
-        for team_name, team_data in self.teams.items():
-            data_without_creatures[team_name] = {}
-            for key, value in team_data.items():
-                if key != "creatures":
-                    data_without_creatures[team_name][key] = value
-
-        with open(data_path + "GameData.json", "w") as f:
-            fcntl.flock(f, fcntl.LOCK_EX)
-            json.dump(data_without_creatures, f, indent=4)
-            fcntl.flock(f, fcntl.LOCK_UN)
-
-
 
     def get_creature_score(self, creature_name):
         # Return the score for a given creature
@@ -915,9 +901,6 @@ class Game:
         if team_name_lower not in self.teams:
             # if the team doesn't already exist
             self.teams[team_name_lower] = {"score": 0, "creatures": []}
-            for creature in self.creature_scores.keys():
-                # Add each creature to the team's creatures list with a count of 0
-                self.teams[team_name_lower]["creatures"].append({"name": creature, "count": 0})
             self.save_data()
 
         # Prepare a message to send to clients with updated team scores and creatures found
