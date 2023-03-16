@@ -12,7 +12,7 @@ To play BioBlitz, you will need:
 
 - A Raspberry Pi with Wi-Fi (or a dongle)
 - An ethernet cable (unless you have two Wi-Fi chips, one onboard and one via dongle, as you need to be able to connect to the Pi and broadcast a Wi-Fi spot)
-- An SD card
+- An SD card and reader/adapter for your device
 - Putty or your favorite SSH client ([https://putty.org](https://putty.org))
 - Angry IP Scanner (if you need help finding the Pi's IP) ([https://angryip.org/download/](https://angryip.org/download/))
 
