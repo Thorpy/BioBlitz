@@ -864,15 +864,16 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        if os.path.exists(data_path + "data.json"):
-            with open(data_path + "data.json", "r") as f:
+        data_file_path = os.path.join("static", "data.json")
+        if os.path.exists(data_file_path):
+            with open(data_file_path, "r") as f:
                 fcntl.flock(f, fcntl.LOCK_SH)
                 self.teams = json.load(f)
                 fcntl.flock(f, fcntl.LOCK_UN)
 
     def save_data(self):
-        # Save original data to original file
-        with open(data_path + "data.json", "w") as f:
+        data_file_path = os.path.join("static", "data.json")
+        with open(data_file_path, "w") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             json.dump(self.teams, f)
             fcntl.flock(f, fcntl.LOCK_UN)
@@ -1031,6 +1032,17 @@ async def game(websocket: WebSocket):
 async def read_index():
     file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/index.html"
     return FileResponse(file_path)
+
+@app.get("/admin")
+async def read_admin():
+    file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/admin.html"
+    return FileResponse(file_path)
+    
+@app.put("/data.json")
+async def update_data(data: dict):
+    with open(f"{home_dir}/BioBlitz/bioblitz-game/static/data.json", "w") as f:
+        json.dump(data, f, indent=2)
+    return {"message": "Data updated successfully"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.4.1", port=8000) # run the app on 192.168.4.1:8000 using uvicorn server (opens with splines captive portal)
