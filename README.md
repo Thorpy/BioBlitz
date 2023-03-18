@@ -50,6 +50,8 @@ To play BioBlitz, you will need:
 
 The wifi hotspot "bioblitz game" should be broadcasting with the password "rockpool", the game is on 192.168.4.1:8000 if the captive portal isn't working on your device for some reason. This should happen when you join the hotspot with the password.
 
+you can access the admin page at 192.168.4.1:8000/admin (warning, there's no authentication, anybody can go to this page and edit scores/creatures or end the game)..but, as this is an offline, very specific game that people can only join within wifi range (within slapping distance) and that know the password "rockpool" (or whatever you changed it to in the customisation section below). I don't think there's much need to limit access to it with hardcoded passwords/mac address.
+
 
 ---------------------------------------------------------------------------
 
