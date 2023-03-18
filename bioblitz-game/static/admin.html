@@ -19,10 +19,13 @@
 
 	<!-- Button to save the changes to the JSON file -->
 	<button onclick="saveData()">Save Changes</button>
-
+	<br><br><br><br><br>
+	<button onclick="confirmEndGame()">End Game</button>
+	
 	<script>
 		// connect to the websocket in order to refresh the client's data
 		var ws = new WebSocket("ws://" + location.host + "/game");
+
 		// Function to load the data from the JSON file
 		function loadData() {
 			fetch('/static/data.json')
@@ -87,6 +90,48 @@
 
 		// Load the data when the page loads
 		loadData();
+
+		// Function to confirm ending the game
+		function confirmEndGame() {
+			if (confirm("Are you sure you want to end the game?")) {
+				endGame();
+			}
+		}
+
+		function endGame() {
+  // Move data.json to the Past Games folder
+  fetch('/move_file', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ source: 'data.json', destination: 'Past Games' })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Rename data.json if necessary
+    const newName = data.newName;
+    if (newName) {
+      fetch('/rename_file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ source: `Past Games/${data.source}`, destination: `Past Games/${newName}` })
+      })
+      .then(() => {
+        // Reload the page
+        location.reload();
+      })
+      .catch(error => console.error(error));
+    } else {
+      // Reload the page
+      location.reload();
+    }
+  })
+  .catch(error => console.error(error));
+}
+
 	</script>
 </body>
 </html>
