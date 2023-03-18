@@ -4,7 +4,7 @@ import json
 import uvicorn
 import fcntl
 from typing import Callable
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +14,8 @@ from urllib.parse import unquote
 app = FastAPI()
 home_dir = os.environ['HOME']
 data_path = f"{home_dir}/BioBlitz/bioblitz-game/"
+data_file_path = os.path.join(data_path, "static", "data.json")
+past_games_path = os.path.join(data_path, "Past Games")
 app.mount("/static", StaticFiles(directory=f"{home_dir}/BioBlitz/bioblitz-game/static"), name="static")
 
 class Game:
@@ -1040,12 +1042,68 @@ async def read_admin():
     
 @app.put("/data.json")
 async def update_data(data: dict):
-    data_file_path = os.path.join(data_path, "static", "data.json")
     with open(data_file_path, "w") as f:
         fcntl.flock(f, fcntl.LOCK_EX)
         json.dump(data, f, indent=2)
         fcntl.flock(f, fcntl.LOCK_UN)
     return {"message": "Data updated successfully"}
+
+@app.post('/move_file')
+async def move_file(request: Request):
+    data = await request.json()
+
+    # Create the destination folder if it doesn't exist
+    os.makedirs(past_games_path, exist_ok=True)
+
+    # Generate a new name for the file if it already exists in the destination folder
+    count = 1
+    new_name = None
+    if len(os.listdir(past_games_path)) == 0:
+        new_name = '1.json'
+    elif os.path.exists(os.path.join(past_games_path, '1.json')):
+        count += 1
+        new_name = f'{count}.json'
+    else:
+        while True:
+            new_path = os.path.join(past_games_path, os.path.basename(data_file_path))
+            if new_name:
+                new_path = os.path.join(past_games_path, new_name)
+            if not os.path.exists(new_path):
+                break
+            count += 1
+            new_name = f'{count}.json'
+
+    # Move the file to the destination folder
+    os.rename(data_file_path, os.path.join(past_games_path, new_name))
+
+    return {'new_name': new_name}
+
+@app.post('/rename_file')
+async def rename_file(request: Request):
+    data = await request.json()
+
+    # Rename the file
+    os.rename(data_file_path, os.path.join(past_games_path, data['new_name']))
+
+    return {}
+
+@app.post('/end_game')
+async def end_game(request: Request):
+    # Move the data.json file to the "Past Games" folder
+    move_file_data = {'source': data_file_path, 'destination': past_games_path}
+    response = await move_file(request=Request(json=move_file_data))
+
+    # Get the new name for the data.json file
+    new_name = response['new_name']
+
+    # Rename the data.json file if necessary
+    if new_name:
+        game_count = len(os.listdir(past_games_path))
+        new_path = os.path.join(past_games_path, f'{game_count + 1}.json')
+        data_file_path = os.path.join(data_path, "static", "data.json")
+        os.rename(data_file_path, new_path)
+
+    return {}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.4.1", port=8000) # run the app on 192.168.4.1:8000 using uvicorn server (opens with splines captive portal)
