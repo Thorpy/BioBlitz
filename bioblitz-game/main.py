@@ -885,13 +885,6 @@ class Game:
         # Return the score for a given creature
         return self.creature_scores.get(creature_name.lower(), 0)
 
-    def is_json_string(self, input_string):
-        try:
-            json.loads(input_string)
-            return True
-        except ValueError:
-            return False
-
     def add_team(self, team_name):
         # Check if the team name is JSON-friendly
         try:
