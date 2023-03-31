@@ -81,7 +81,7 @@
 		});
 
 		submitCreature.addEventListener("click", function() {
-		    var name = creatureName.value.trim().replace(/[^\w\s]|_/g, ''); // remove non-alphanumeric characters except for spaces
+		    var name = creatureName.value.trim().replace(/[^\'\w\s]|_/g, ''); // remove non-alphanumeric characters except for spaces
 		    name = encodeURIComponent(name); // encode special characters
 		    name = name.trim(); // remove any leading or trailing whitespace
 
