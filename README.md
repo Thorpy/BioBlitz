@@ -4,7 +4,7 @@ BioBlitz is a game for "The Rockpool Project" that allows players to join teams 
 
 ## How to Play
 
-The game runs on a Raspberry Pi, and the captive portal ([https://github.com/Splines/raspi-captive-portal](https://github.com/Splines/raspi-captive-portal)) spawns a Wi-Fi hotspot that redirects users to a welcome page. The welcome page then redirects the user, upon pressing the start button, to the FastAPI server that hosts the BioBlitz game.
+The game runs on a Raspberry Pi, and the captive portal ([https://github.com/Splines/raspi-captive-portal](https://github.com/Splines/raspi-captive-portal)) spawns a Wi-Fi hotspot that redirects users to a welcome page. The welcome page then redirects the user (upon pressing the start button) to the FastAPI server that hosts the BioBlitz game.
 
 ## Prerequisites
 
