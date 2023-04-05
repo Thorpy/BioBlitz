@@ -19,7 +19,17 @@ past_games_path = os.path.join(data_path, "Past Games")
 app.mount("/static", StaticFiles(directory=f"{home_dir}/BioBlitz/bioblitz-game/static"), name="static")
 
 class Game:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
+        if hasattr(self, "creature_scores"):
+            # Game instance already initialized
+            return
         # Define initial scores for creatures
         self.creature_scores = {
             "a hydroid":3,
@@ -869,7 +879,7 @@ class Game:
         data_file_path = os.path.join(data_path, "static", "data.json")
         if os.path.exists(data_file_path):
             with open(data_file_path, "r") as f:
-                fcntl.flock(f, fcntl.LOCK_SH)
+                fcntl.flock(f, fcntl.LOCK_EX)
                 self.teams = json.load(f)
                 fcntl.flock(f, fcntl.LOCK_UN)
 
@@ -897,7 +907,6 @@ class Game:
         if team_name_lower not in self.teams:
             # if the team doesn't already exist
             self.teams[team_name_lower] = {"score": 0, "creatures": []}
-            self.save_data()
 
         # Prepare a message to send to clients with updated team scores and creatures found
         creatures = self.teams[team_name_lower]["creatures"]
@@ -915,14 +924,13 @@ class Game:
             if creature_name.lower() not in self.teams[team_name.lower()]["creatures"]:
                 self.teams[team_name.lower()]["score"] += creature_score
                 self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
-                self.save_data()
         else:
             self.add_team(team_name.lower())
             self.teams[team_name.lower()]["score"] += creature_score
             self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
-            self.save_data()
 
         # Prepare a message to send to clients with updated team scores
+        self.save_data()
         creatures = self.teams[team_name.lower()]["creatures"]
         data = {"action": "update_team_scores", "teams": self.teams, "creatures": creatures}
         message = json.dumps(data)
@@ -1032,7 +1040,7 @@ async def read_index():
 async def read_admin():
     file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/admin.html"
     return FileResponse(file_path)
-    
+
 @app.put("/data.json")
 async def update_data(data: dict):
     with open(data_file_path, "w") as f:
