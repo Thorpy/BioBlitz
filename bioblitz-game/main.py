@@ -1090,6 +1090,7 @@ async def rename_file(request: Request):
 
 @app.post('/end_game')
 async def end_game(request: Request):
+    data_file_path = os.path.join(data_path, "static", "data.json")
     # Move the data.json file to the "Past Games" folder
     move_file_data = {'source': data_file_path, 'destination': past_games_path}
     response = await move_file(request=Request(json=move_file_data))
