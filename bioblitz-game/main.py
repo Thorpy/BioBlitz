@@ -1041,18 +1041,9 @@ async def read_admin():
     file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/admin.html"
     return FileResponse(file_path)
 
-@app.put("/data.json")
-async def update_data(data: dict):
-    with open(data_file_path, "w") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
-        json.dump(data, f, indent=2)
-        fcntl.flock(f, fcntl.LOCK_UN)
-    return {"message": "Data updated successfully"}
-
 @app.post('/move_file')
 async def move_file(request: Request):
     data = await request.json()
-
     # Create the destination folder if it doesn't exist
     os.makedirs(past_games_path, exist_ok=True)
 
@@ -1076,36 +1067,9 @@ async def move_file(request: Request):
 
     # Move the file to the destination folder
     os.rename(data_file_path, os.path.join(past_games_path, new_name))
-
+    Game._instance = None
+    Game.teams = {}
     return {'new_name': new_name}
-
-@app.post('/rename_file')
-async def rename_file(request: Request):
-    data = await request.json()
-
-    # Rename the file
-    os.rename(data_file_path, os.path.join(past_games_path, data['new_name']))
-
-    return {}
-
-@app.post('/end_game')
-async def end_game(request: Request):
-    data_file_path = os.path.join(data_path, "static", "data.json")
-    # Move the data.json file to the "Past Games" folder
-    move_file_data = {'source': data_file_path, 'destination': past_games_path}
-    response = await move_file(request=Request(json=move_file_data))
-
-    # Get the new name for the data.json file
-    new_name = response['new_name']
-
-    # Rename the data.json file if necessary
-    if new_name:
-        game_count = len(os.listdir(past_games_path))
-        new_path = os.path.join(past_games_path, f'{game_count + 1}.json')
-        data_file_path = os.path.join(data_path, "static", "data.json")
-        os.rename(data_file_path, new_path)
-
-    return {}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.4.1", port=8000) # run the app on 192.168.4.1:8000 using uvicorn server (opens with splines captive portal)
