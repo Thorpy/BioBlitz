@@ -9,6 +9,7 @@ from fastapi.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from urllib.parse import unquote
+from threading import Lock
 
 
 app = FastAPI()
@@ -873,6 +874,7 @@ class Game:
         }
         # Define initial teams dictionary
         self.teams = {}
+        self.lock = Lock()
         self.load_data()
 
     def load_data(self):
@@ -914,26 +916,25 @@ class Game:
         message = json.dumps(data)
         return message
 
-
-
     def submit_creature(self, team_name, creature_name):
         # Add a creature to a team and update the team's score
         creature_name = unquote(creature_name.lower())
         creature_score = self.get_creature_score(creature_name)
-        if team_name.lower() in self.teams:
-            if creature_name.lower() not in self.teams[team_name.lower()]["creatures"]:
+        with self.lock:
+            if team_name.lower() in self.teams:
+                if creature_name.lower() not in self.teams[team_name.lower()]["creatures"]:
+                    self.teams[team_name.lower()]["score"] += creature_score
+                    self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
+            else:
+                self.add_team(team_name.lower())
                 self.teams[team_name.lower()]["score"] += creature_score
                 self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
-        else:
-            self.add_team(team_name.lower())
-            self.teams[team_name.lower()]["score"] += creature_score
-            self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
 
-        # Prepare a message to send to clients with updated team scores
-        self.save_data()
-        creatures = self.teams[team_name.lower()]["creatures"]
-        data = {"action": "update_team_scores", "teams": self.teams, "creatures": creatures}
-        message = json.dumps(data)
+            # Prepare a message to send to clients with updated team scores
+            self.save_data()
+            creatures = self.teams[team_name.lower()]["creatures"]
+            data = {"action": "update_team_scores", "teams": self.teams, "creatures": creatures}
+            message = json.dumps(data)
         return message
 
     def get_team_scores(self):
