@@ -3,7 +3,10 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Admin Page</title>
-	    <style>
+</head>
+<body>
+	<h1>Team Scores</h1>
+    <style>
         body {
             font-family: Arial, sans-serif;
             font-size: 14px;
@@ -47,9 +50,6 @@
             background-color: #3e8e41;
         }
     </style>
-</head>
-<body>
-	<h1>Team Scores</h1>
 	<table id="team-scores">
 		<thead>
 			<tr>
@@ -66,7 +66,7 @@
 	<button onclick="saveData()">Save Changes</button>
 	<br><br><br><br><br>
 	<button onclick="confirmEndGame()">End Game</button>
-	
+
 	<script>
 		// connect to the websocket in order to refresh the client's data
 		var ws = new WebSocket("ws://" + location.host + "/game");
