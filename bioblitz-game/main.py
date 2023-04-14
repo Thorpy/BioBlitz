@@ -917,13 +917,14 @@ class Game:
         return message
 
     def submit_creature(self, team_name, creature_name):
+        self.load_data()
         # Add a creature to a team and update the team's score
         creature_name = unquote(creature_name.lower())
         creature_score = self.get_creature_score(creature_name)
         with self.lock:
             if team_name.lower() in self.teams:
                 if creature_name.lower() not in self.teams[team_name.lower()]["creatures"]:
-                    self.teams[team_name.lower()]["score"] += creature_score
+                    self.teams[team_name.lower()]["score"] = int(self.teams[team_name.lower()]["score"]) + creature_score
                     self.teams[team_name.lower()]["creatures"].append(creature_name.lower())
             else:
                 self.add_team(team_name.lower())
@@ -1041,6 +1042,15 @@ async def read_index():
 async def read_admin():
     file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/admin.html"
     return FileResponse(file_path)
+
+@app.put("/data.json")
+async def update_data(data: dict):
+    data_file_path = f"{home_dir}/BioBlitz/bioblitz-game/static/data.json"
+    with open(data_file_path, "w") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        json.dump(data, f, indent=2)
+        fcntl.flock(f, fcntl.LOCK_UN)
+    return {"message": "Data updated successfully"}
 
 @app.post('/move_file')
 async def move_file(request: Request):
